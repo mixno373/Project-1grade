@@ -39,14 +39,18 @@ async def create_db():
         
 @app.route('/discoin/auth', methods=HTTP_METHODS)
 async def auth_():
-    if request.method == 'PUT':
+    if request.method == 'GET':
         headers, data, args, form = await request_parse(request)
 
-        login = form.get("login", "-").lower()
-        password = form.get("password")
-        state = form.get("state", "-").lower()
+        data_stor = [data, args, form]
+
+        login = form_data_get(data_stor, "login", "-").lower()
+        access_code = form_data_get(data_stor, "access_code", "-")
         
-        resp = []
+        resp = {
+            "balance": 1_000_000,
+            "profit": 373,
+        }
         
         # resp = await auth_user(app.pool, login, password, state)
 

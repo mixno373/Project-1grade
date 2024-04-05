@@ -44,6 +44,7 @@ class ApiResponse:
     def unsupported_method(self):
         self.message = "Method isn't supported."
         self.code = 400
+        self.status = 400
         return self.response
 
     @property
