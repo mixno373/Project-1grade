@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Discoin',
       theme: ThemeData(
         // This is the theme of your application.
@@ -112,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            container,
           ],
         ),
       ),
@@ -123,3 +125,21 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+
+var container = Container(
+  color: Colors.purple,
+  width: 300.0,
+  height: 200.0,
+  margin: EdgeInsets.all(16.0),
+  child: Center(
+    child: Text(
+        'Hello app!',
+      style: TextStyle(
+          color: Colors.white,
+          fontSize: 30.0,
+          fontWeight: FontWeight.bold,
+      ),
+    ),
+  ),
+);
