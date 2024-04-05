@@ -17,6 +17,7 @@ __version__ = "0.1.0"
 app = Quart(__name__)
 app = cors(app, allow_origin="*")
 
+APIRESP = ApiResponse()
 
 if sys.platform == 'win32':
     locale.setlocale(locale.LC_ALL, 'rus_rus')

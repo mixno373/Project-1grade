@@ -16,6 +16,8 @@ class ApiResponse:
             "message": self.message
         }), self.status
 
+
+
     @property
     def registered(self):
         self.message = "User has been registered."
@@ -28,11 +30,15 @@ class ApiResponse:
         self.code = 101
         return self.response
 
+
+
     @property
     def request_limit(self):
         self.message = "You've reached a limit for that request."
         self.code = 300
         return self.response
+
+
 
     @property
     def unsupported_method(self):
@@ -56,4 +62,12 @@ class ApiResponse:
     def unregistered(self):
         self.message = "Unregistered. Change your login."
         self.code = 403
+        return self.response
+
+
+
+    @property
+    def api_error(self):
+        self.message = "API crashed.. :("
+        self.code = 501
         return self.response
