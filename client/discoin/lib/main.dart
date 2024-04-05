@@ -26,6 +26,29 @@ class _LoginPageState extends State<LoginPage> {
   bool showPassword = false;
   bool isLoading = false;
 
+  // Email Validation
+  final loginPattern =
+      r'^[a-zA-Z\-0-9]+$';
+  bool validateLogin(String email) {
+    final regExp = RegExp(loginPattern);
+    return regExp.hasMatch(email);
+  }
+
+  void login() {
+    if (_formKey.currentState!.validate()) {
+      isLoading = true;
+      setState(() {});
+      Future.delayed(const Duration(seconds: 2), () {
+        isLoading = false;
+        setState(() {});
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,6 +72,15 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(children: [
                     const SizedBox(height: 20),
                     TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Пожалуйста, введите логин';
+                        }
+                        if (!validateLogin(_loginController.text)) {
+                          return 'Пожалуйста, исправьте логин: a-z, A-Z, -, 0-9';
+                        }
+                        return null;
+                      },
                       controller: _loginController,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
@@ -68,6 +100,18 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 25),
                     TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Пожалуйста, введите пароль';
+                        }
+                        if (value.length < 6) {
+                          return 'Пароль не может быть менее 6 символов';
+                        }
+                        if (value.length > 15) {
+                          return 'Пароль не может быть более 15 символов';
+                        }
+                        return null;
+                      },
                       controller: _passwordController,
                       obscureText: showPassword ? false : true,
                       style: const TextStyle(color: Colors.white),
@@ -99,8 +143,56 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ]),
-                )
+                ),
+
+                const SizedBox(height: 25),
+                InkWell(
+                  onTap: () {
+                    login();
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.lightBlueAccent.shade200,
+                      borderRadius: BorderRadius.circular(36),
+                    ),
+                    child: Center(
+                      child: isLoading
+                          ? const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      )
+                          : const Text(
+                        'Войти',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                ),
               ]),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text(
+          'Ваш баланс: 373',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, fontFamily: 'Montserrat'),
         ),
       ),
     );
