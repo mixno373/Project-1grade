@@ -24,6 +24,20 @@ def split_int(value, char = "."):
     value = value.lstrip(char)
     return value
 
+async def request_parse(request):
+    headers = request.headers
+    data = await request.json
+    args = request.args
+    form = await request.form
+
+    if not data:
+        data = {}
+
+    for key, value in args.items():
+        data[key] = value
+
+    return headers, data, args, form
+
 def get_int_from_data(data, key, min=1, max=1, default=1):
     try:
         value = int(data[key])

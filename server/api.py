@@ -34,3 +34,27 @@ async def create_db():
     except Exception as e:
         print('PostgreSQL doesn\'t load.\n'+str(e))
         exit(0)
+        
+        
+        
+@app.route('/discoin/auth', methods=HTTP_METHODS)
+async def auth_():
+    if request.method == 'PUT':
+        headers, data, args, form = await request_parse(request)
+
+        login = form.get("login", "-").lower()
+        password = form.get("password")
+        state = form.get("state", "-").lower()
+        
+        resp = []
+        
+        # resp = await auth_user(app.pool, login, password, state)
+
+        return jsonify(resp), 200
+
+    return APIRESP.unsupported_method
+
+
+
+
+app.run(host='localhost', port=8083, debug=False, use_reloader=True)
