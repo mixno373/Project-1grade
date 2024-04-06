@@ -41,6 +41,8 @@ async def create_db():
 async def auth_():
     if request.method == 'GET':
         headers, data, args, form = await request_parse(request)
+        
+        print(headers, data, args, form)
 
         data_stor = [data, args, form]
 
