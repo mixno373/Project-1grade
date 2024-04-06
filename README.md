@@ -41,7 +41,7 @@
 
 
 ***API***
-> - BaseUrl = 'https://diverstat.ru/discoin'
+> - BaseUrl = https://diverstat.ru/discoin
 > - /auth - Авторизация доступа / обновление данных баланса => return {"balance", "profit"}
 
  
