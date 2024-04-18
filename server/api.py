@@ -25,7 +25,7 @@ else:
     locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
     
     
-@app.before_first_request
+@app.before_serving
 async def create_db():
     try:
         app.pool = PostgresqlDatabase(dsn=settings['psql'])
@@ -39,15 +39,15 @@ async def create_db():
         
 @app.route('/discoin/auth', methods=HTTP_METHODS)
 async def auth_():
-    if request.method == 'GET':
+    if request.method in ['GET', 'POST']:
         headers, data, args, form = await request_parse(request)
-        
-        print(headers, data, args, form)
 
         data_stor = [data, args, form]
 
         login = form_data_get(data_stor, "login", "-").lower()
         access_code = form_data_get(data_stor, "access_code", "-")
+        
+        print(login, access_code)
         
         resp = {
             "balance": 1_000_000,

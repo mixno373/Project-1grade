@@ -1,13 +1,24 @@
 package ru.diverstat.discoin
 
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
 import kotlinx.coroutines.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
+import org.json.JSONObject
+import retrofit2.Retrofit
 import ru.diverstat.discoin.databinding.ActivityMainBinding
 import java.lang.Math.pow
+import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -18,6 +29,12 @@ class MainActivity : AppCompatActivity() {
     private var coroJob: Job = Job()
     private var pageScope = CoroutineScope(Dispatchers.IO)
 
+    private val okHttpClientvalor = OkHttpClient.Builder()
+        .connectTimeout(90, TimeUnit.SECONDS)
+        .writeTimeout(90, TimeUnit.SECONDS)
+        .readTimeout(90, TimeUnit.SECONDS)
+        .build()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -27,6 +44,9 @@ class MainActivity : AppCompatActivity() {
         binding.auth.setOnClickListener {
             onAuthCLick()
         }
+
+        // Запросить права на доступ в Интернет
+        requestPerms()
     }
 
     override fun onResume() {
@@ -40,6 +60,16 @@ class MainActivity : AppCompatActivity() {
         pageScope.cancel()
 
         super.onDestroy()
+    }
+
+    private fun requestPerms() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(
+                arrayOf(
+                    "android.permission.INTERNET"
+                ), 1
+            )
+        }
     }
 
     private fun validateLogin(): Boolean {
@@ -104,11 +134,69 @@ class MainActivity : AppCompatActivity() {
         if (!validateLogin()) { return }
         if (!validatePassword()) { return }
 
-        val login = binding.login.text
+        val login = binding.login.text.toString()
         val access_code = getAccessCode()
 
-        coroJob = pageScope.launch {
-            Log.d("MainActivity", "Access_code = '$access_code'")
+        getWallet(login, access_code)
+    }
+
+    private fun getWallet(login: String, access_code: String) {
+
+        // Create Retrofit
+        val retrofit = Retrofit.Builder()
+            .client(okHttpClientvalor)
+            .baseUrl(API_BASE_URL)
+            .build()
+
+        // Create Service
+        val service = retrofit.create(APIService::class.java)
+
+        pageScope.launch {
+            /*
+             * For @Query: You need to replace the following line with val response = service.getEmployees(2)
+             * For @Path: You need to replace the following line with val response = service.getEmployee(53)
+             */
+
+            // Create JSON using JSONObject
+            val jsonObject = JSONObject()
+            jsonObject.put("login", login)
+            jsonObject.put("access_code", access_code)
+
+            // Convert JSONObject to String
+            val jsonObjectString = jsonObject.toString()
+
+            // Create RequestBody ( We're not using any converter, like GsonConverter, MoshiConverter e.t.c, that's why we use RequestBody )
+            val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
+
+            // Do the GET request and get response
+            val response = service.auth(requestBody)
+
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    try {
+                        // Convert raw JSON to pretty JSON using GSON library
+                        val wallet = response.body()
+
+                        if (wallet!!.balance >= 0) {
+                            // TODO load wallet activity
+                        }
+
+                    } catch (e: Exception) {
+                        Log.d("JSON Exception:", e.toString())
+                    }
+
+
+
+                } else {
+
+                    Log.e("RETROFIT_ERROR", response.code().toString())
+
+                }
+            }
         }
+    }
+
+    private fun updateFields(fields: Gson) {
+
     }
 }
