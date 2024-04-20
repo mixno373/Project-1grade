@@ -1,23 +1,21 @@
 package ru.diverstat.discoin
 
-import android.content.pm.PackageManager
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonParser
 import kotlinx.coroutines.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import ru.diverstat.discoin.databinding.ActivityMainBinding
-import java.lang.Math.pow
 import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 import kotlin.random.Random
@@ -28,6 +26,9 @@ class MainActivity : AppCompatActivity() {
 
     private var coroJob: Job = Job()
     private var pageScope = CoroutineScope(Dispatchers.IO)
+
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
 
     private val okHttpClientvalor = OkHttpClient.Builder()
         .connectTimeout(90, TimeUnit.SECONDS)
@@ -40,6 +41,16 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Открываем хранилище Shared Preferences
+        sharedPreferences = getSharedPreferences(
+            "shared_preferences",
+            Context.MODE_PRIVATE
+        )
+        editor = sharedPreferences.edit()
+
+        binding.login.setText(sharedPreferences.getString("login", "").toString())
+        binding.password.setText(sharedPreferences.getString("password", "").toString())
 
         binding.auth.setOnClickListener {
             onAuthCLick()
@@ -75,15 +86,21 @@ class MainActivity : AppCompatActivity() {
     private fun validateLogin(): Boolean {
         val login = binding.login.text
         if (login.length < 3) {
-            Toast.makeText(baseContext, "Логин не может быть менее 3 символов", Toast.LENGTH_SHORT).show()
+            Toast.makeText(baseContext, "Логин не может быть менее 3 символов", Toast.LENGTH_SHORT)
+                .show()
             return false
         }
-        if (login.length > 10) {
-            Toast.makeText(baseContext, "Логин не может быть более 10 символов", Toast.LENGTH_SHORT).show()
+        if (login.length > 15) {
+            Toast.makeText(baseContext, "Логин не может быть более 15 символов", Toast.LENGTH_SHORT)
+                .show()
             return false
         }
         if (!login.matches(Regex("[a-zA-Z-0-9]+"))) {
-            Toast.makeText(baseContext, "Логин содержит недопустимые символы. Используйте: a-z, A-Z, -, 0-9", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                baseContext,
+                "Логин содержит недопустимые символы. Используйте: a-z, A-Z, -, 0-9",
+                Toast.LENGTH_SHORT
+            ).show()
             return false
         }
 
@@ -93,11 +110,16 @@ class MainActivity : AppCompatActivity() {
     private fun validatePassword(): Boolean {
         val password = binding.password.text
         if (password.length < 5) {
-            Toast.makeText(baseContext, "Пароль не может быть менее 5 символов", Toast.LENGTH_SHORT).show()
+            Toast.makeText(baseContext, "Пароль не может быть менее 5 символов", Toast.LENGTH_SHORT)
+                .show()
             return false
         }
         if (password.length > 20) {
-            Toast.makeText(baseContext, "Пароль не может быть более 20 символов", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                baseContext,
+                "Пароль не может быть более 20 символов",
+                Toast.LENGTH_SHORT
+            ).show()
             return false
         }
 
@@ -131,19 +153,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onAuthCLick() {
-        if (!validateLogin()) { return }
-        if (!validatePassword()) { return }
+        if (!validateLogin()) {
+            return
+        }
+        if (!validatePassword()) {
+            return
+        }
 
         val login = binding.login.text.toString()
+        val password = binding.password.text.toString()
         val access_code = getAccessCode()
 
-        getWallet(login, access_code)
+        editor = sharedPreferences.edit()
+        editor.putString("login", login)
+        editor.putString("password", password)
+        editor.putString("access_code", access_code)
+        editor.commit()
+
+        getAuthData(login, access_code)
     }
 
-    private fun getWallet(login: String, access_code: String) {
+    private fun getAuthData(login: String, access_code: String) {
 
         // Create Retrofit
         val retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClientvalor)
             .baseUrl(API_BASE_URL)
             .build()
@@ -175,28 +209,42 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     try {
                         // Convert raw JSON to pretty JSON using GSON library
-                        val wallet = response.body()
+                        val authData = response.body()
 
-                        if (wallet!!.balance >= 0) {
-                            // TODO load wallet activity
+                        if (authData!!.status == 100 || authData!!.status == 101) {
+                            val intent = Intent(this@MainActivity, Profile::class.java)
+                            startActivity(intent)
+
+                            finish()
+                        } else {
+                            val error_text = when (authData!!.status) {
+                                100 -> "Регистрация прошла успешно!"
+                                101 -> "Авторизован!"
+
+                                300 -> "Достигнут лимит запросов! Подождите немного."
+
+                                400 -> "Операция не поддерживается."
+                                401 -> "Не отправлены логин или пароль."
+                                402 -> "Не авторизован."
+                                403 -> "Ошибка регистрации. Логин занят."
+
+                                501 -> "API не отвечает ¯\\_(ツ)_/¯"
+
+                                else -> "Неизвестная ошибка ¯\\_(ツ)_/¯"
+                            }
+
+                            Toast.makeText(this@MainActivity, error_text, Toast.LENGTH_SHORT).show()
                         }
 
                     } catch (e: Exception) {
                         Log.d("JSON Exception:", e.toString())
                     }
 
-
-
                 } else {
-
                     Log.e("RETROFIT_ERROR", response.code().toString())
-
                 }
             }
         }
     }
 
-    private fun updateFields(fields: Gson) {
-
-    }
 }

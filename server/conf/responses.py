@@ -7,14 +7,13 @@ class ApiResponse:
     def __init__(self, message: str="Success!", code: int=404):
         self.message = message
         self.code = code
-        self.status = 200
 
     @property
     def response(self):
         return jsonify({
             "status": self.code,
             "message": self.message
-        }), self.status
+        }), 200
 
 
 
@@ -44,7 +43,6 @@ class ApiResponse:
     def unsupported_method(self):
         self.message = "Method isn't supported."
         self.code = 400
-        self.status = 400
         return self.response
 
     @property

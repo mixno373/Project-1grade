@@ -9,14 +9,28 @@ interface APIService {
 
     @Headers("Content-Type: application/json")
     @POST("auth")
-    suspend fun auth(@Body requestBody: RequestBody): Response<Wallet>
+    suspend fun auth(@Body requestBody: RequestBody): Response<AuthData>
+
+    @Headers("Content-Type: application/json")
+    @POST("wallet")
+    suspend fun wallet(@Body requestBody: RequestBody): Response<Wallet>
 
 }
 
+data class AuthData(
+    var message: String? = "",
+    var status: Int? = 0
+)
+
 data class Wallet(
-    // on below line creating variables for our modal class
-    // make sure that variable name should be same to
-    // that of key which is used in json response.
-    var balance: Int,
-    var profit: Int,
+    var balance: Long,
+    var profit: Long,
+    var ts: Long,
+    var items: List<WalletItem>
+)
+
+data class WalletItem(
+    var name: String,
+    var count: Long,
+    var profit: Long
 )
