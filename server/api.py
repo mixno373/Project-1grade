@@ -62,7 +62,7 @@ async def auth_():
             "access_code": access_code,
             "balance": 0,
             "profit": 1,
-            "items": '[]',
+            "items": json.dumps([WalletItems[0]], ensure_ascii=False, sort_keys=True, separators=(',', ':')),
             "ts": unix_time(),
         }, "users")
 
@@ -88,7 +88,7 @@ async def wallet_():
             "balance": u_data["balance"],
             "profit": u_data["profit"],
             "ts": u_data["ts"],
-            "items": u_data["items"]
+            "items": json.loads(u_data["items"])
         }
 
         return jsonify(resp), 200
@@ -144,6 +144,13 @@ async def buyitem_():
             item_["count"] = min(item_["count"] + count, item["max"])
             profit += item_["profit"] * item_["count"]
             items.append(item_)
+            
+        old_items = {oi['name'].lower(): oi for oi in items}
+        for w_item in WalletItems:
+            item_ = old_items.get(w_item["name"].lower())
+            if not item_:
+                items.append(copy.deepcopy(w_item))
+                break
             
             
         u_data = await app.pool.update({
