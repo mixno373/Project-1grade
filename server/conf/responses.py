@@ -36,6 +36,12 @@ class ApiResponse:
         self.message = "You've reached a limit for that request."
         self.code = 300
         return self.response
+    
+    @property
+    def not_item(self):
+        self.message = "Item doesn't exists."
+        self.code = 301
+        return self.response
 
 
 

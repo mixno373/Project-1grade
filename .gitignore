@@ -47,3 +47,4 @@ config/
 .externalNativeBuild
 .cxx
 local.properties
+client/Discoin/app/build.gradle

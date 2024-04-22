@@ -15,6 +15,10 @@ interface APIService {
     @POST("wallet")
     suspend fun wallet(@Body requestBody: RequestBody): Response<Wallet>
 
+    @Headers("Content-Type: application/json")
+    @POST("buyitem")
+    suspend fun buyitem(@Body requestBody: RequestBody): Response<Wallet>
+
 }
 
 data class AuthData(
@@ -32,5 +36,7 @@ data class Wallet(
 data class WalletItem(
     var name: String,
     var count: Long,
-    var profit: Long
+    var profit: Long,
+    var cost: Long,
+    var max: Long
 )

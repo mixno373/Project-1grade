@@ -204,25 +204,28 @@ class PostgresqlDatabase:
         # print(expression)
         return await self.pool.fetchrow(expression)
 
-    async def update(self, target: dict, table: str, where={}):
+    async def update(self, target, table: str, where={}):
         assert target, "Values is None"
 
         w = self._where(where)
-        s = []
-        for key, value in target.items():
-            if isinstance(value, int) or isinstance(value, float):
-                val = value
-            elif isinstance(value, bool):
-                val = "TRUE" if value else "FALSE"
-            elif value == None:
-                val = "NULL"
-            elif isinstance(value, dict):
-                for _k, _v in value.items():
-                    val = f"{table}.{key}{_v}{_k}"
-            else:
-                val = f"E'{self.clear(value)}'"
-            s.append(f"{key}={val}")
-        s = ",".join(s)
+        if isinstance(target, dict):
+            s = []
+            for key, value in target.items():
+                if isinstance(value, int) or isinstance(value, float):
+                    val = value
+                elif isinstance(value, bool):
+                    val = "TRUE" if value else "FALSE"
+                elif value == None:
+                    val = "NULL"
+                elif isinstance(value, dict):
+                    for _k, _v in value.items():
+                        val = f"{table}.{key}{_v}{_k}"
+                else:
+                    val = f"E'{self.clear(value)}'"
+                s.append(f"{key}={val}")
+            s = ",".join(s)
+        else:
+            s = str(target)
         expression = f"""UPDATE {table} SET {s} {w} RETURNING *;"""
         # print(expression)
         return await self.pool.fetchrow(expression)
