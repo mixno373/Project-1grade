@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
 
+    private lateinit var retrofit: Retrofit
+
     private val okHttpClientvalor = OkHttpClient.Builder()
         .connectTimeout(90, TimeUnit.SECONDS)
         .writeTimeout(90, TimeUnit.SECONDS)
@@ -51,6 +53,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.login.setText(sharedPreferences.getString("login", "").toString())
         binding.password.setText(sharedPreferences.getString("password", "").toString())
+
+        retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClientvalor)
+            .baseUrl(API_BASE_URL)
+            .build()
 
         binding.auth.setOnClickListener {
             onAuthCLick()
@@ -74,13 +82,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestPerms() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(
-                arrayOf(
-                    "android.permission.INTERNET"
-                ), 1
-            )
-        }
+        requestPermissions(
+            arrayOf(
+                "android.permission.INTERNET"
+            ), 1
+        )
     }
 
     private fun validateLogin(): Boolean {
@@ -174,14 +180,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getAuthData(login: String, access_code: String) {
-
-        // Create Retrofit
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClientvalor)
-            .baseUrl(API_BASE_URL)
-            .build()
-
         // Create Service
         val service = retrofit.create(APIService::class.java)
 

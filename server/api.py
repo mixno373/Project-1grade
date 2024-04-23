@@ -148,6 +148,8 @@ async def buyitem_():
         old_items = {oi['name'].lower(): oi for oi in items}
         for w_item in WalletItems:
             item_ = old_items.get(w_item["name"].lower())
+            if item_ and item_["count"] == 0:
+                break
             if not item_:
                 items.append(copy.deepcopy(w_item))
                 break

@@ -82,92 +82,92 @@ WalletItems = [
     {
         "name": "Майнер",  
         "count": 0,   
-        "profit": 5,    
+        "profit": 2,    
         "cost": 55,     
         "max": 100
     },
     {
         "name": "Зимняя заначка",  
         "count": 0,   
-        "profit": 10,    
-        "cost": 150,     
+        "profit": 3,    
+        "cost": 1500,     
         "max": 50
     },
     {
         "name": "Золотой слиток",  
         "count": 0,   
-        "profit": 15,    
-        "cost": 350,     
+        "profit": 3,    
+        "cost": 3500,     
         "max": 41
     },
     {
         "name": "Центральный Банк",  
         "count": 0,   
-        "profit": 20,   
-        "cost": 600,     
+        "profit": 4,   
+        "cost": 6000,     
         "max": 36
     },
     {
         "name": "Денежный Арсенал",  
         "count": 0,   
-        "profit": 40,    
-        "cost": 800,     
+        "profit": 5,    
+        "cost": 8000,     
         "max": 30
     },
     {
         "name": "Тайник Императора",  
         "count": 0,   
-        "profit": 50,    
-        "cost": 1000,     
+        "profit": 6,    
+        "cost": 10000,     
         "max": 25
     },
     {
         "name": "Неприкосновенный Запас",  
         "count": 0,   
-        "profit": 75,    
-        "cost": 1200,     
+        "profit": 8,    
+        "cost": 100000,     
         "max": 20
     },
     {
         "name": "Драконий Сейф",  
         "count": 0,   
-        "profit": 90,    
-        "cost": 2500,     
+        "profit": 9,    
+        "cost": 250000,     
         "max": 15
     },
     {
         "name": "Казначейский Сундук",  
         "count": 0,   
-        "profit": 100,    
-        "cost": 7000,     
+        "profit": 10,    
+        "cost": 700000,     
         "max": 12
     },
     {
         "name": "Золотовалютный Резерв",  
         "count": 0,   
-        "profit": 115,    
-        "cost": 10000,     
+        "profit": 11,    
+        "cost": 1000000,     
         "max": 5
     },
     {
         "name": "Криптовалютный Кошель",  
         "count": 0,   
-        "profit": 130,    
-        "cost": 35000,     
+        "profit": 13,    
+        "cost": 3500000,     
         "max": 3
     },
     {
         "name": "Сокровищница Миллионера",  
         "count": 0,   
-        "profit": 150,    
-        "cost": 50000,     
+        "profit": 15,    
+        "cost": 5000000,     
         "max": 2
     },
     {
         "name": "Денежная Империя",  
         "count": 0,   
-        "profit": 250,    
-        "cost": 100000,     
+        "profit": 25,    
+        "cost": 10000000,     
         "max": 1
     }
 ]
