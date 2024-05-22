@@ -67,10 +67,10 @@
 ## Скриншоты
 
 Главная страница:
-![Главная страница](https://github.com/mixno373/Project-1grade/blob/main/img/1.png?raw=true)
+![Главная страница](https://github.com/mixno373/Project-1grade/blob/main/img/1.jpg?raw=true)
 
 Баланс:
-![Баланс](https://github.com/mixno373/Project-1grade/blob/main/img/2.png?raw=true)
+![Баланс](https://github.com/mixno373/Project-1grade/blob/main/img/2.jpg?raw=true)
 
 Покупка улучшений:
-![Покупка улучшени](https://github.com/mixno373/Project-1grade/blob/main/img/3.png?raw=true)
+![Покупка улучшени](https://github.com/mixno373/Project-1grade/blob/main/img/3.jpg?raw=true)
